@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+
+  db:
+    container_name: pg_container
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: people_db
+    ports:
+      - "5432:5432"
+    volumes:
+      ##- $HOME/Desktop/PostgreSql-Snippets/infile:/infile
+      - pg_data:/var/lib/postgresql/data/
+
+  web:
+    container_name: api_people
+    build: .
+    command: 
+      - py manage.py migrate
+      - py manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code/
+    ports:
+      - "8000:8000"
+    depends_on:
+       - db
+volumes:
+  pg_data:
